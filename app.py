@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 
 app = Flask(__name__)
@@ -54,6 +54,28 @@ def chat(chat_id):
 def confirm():
     return render_template('confirm_page.html')
 
+@app.route('/newchat')
+def newchat():
+    query = request.args.get('q')
+    if query == None:
+        query = ''
+    
+    found_users = [
+        {
+            'nickname': 'Arseniy',
+            'chat_id': '1234'
+        },
+        {
+            'nickname': 'Nikita',
+            'chat_id': '123456'
+        }
+    ]
+
+    return render_template('newchat_page.html', query=query, found_users=found_users)
+
+@app.route('/settings')
+def settings():
+    return render_template('settings_page.html')
 
 '''
 @app.route('/<string:filename>')
