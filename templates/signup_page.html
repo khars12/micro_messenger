@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="card shadow-lg bg-light">
+    <h5 class="card-header text-center">Sign Up</h5>
+    <div class="card-body">
+        <form class="mb-0" action="./chats">
+            <div class="mb-1">
+                Nickname not found. <br>
+                Confirm password to sign up.
+            </div>
+            <div class="mb-1">
+                <input type="password" class="form-control" id="exampleConfirmPassword1" placeholder="Confirm password">
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mb-3">Sign up</button>
+            <div class="mb-1">
+                Or go back to sign in.
+            </div>
+        </form>
+        <a href="./login" class="btn btn-secondary w-100">Go back</a>
+    </div>
+    <div class="card-footer text-center text-muted py-1">Micro Messenger</div>
+</div>
+{% endblock %}
