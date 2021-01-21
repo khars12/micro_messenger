@@ -1,11 +1,7 @@
-from flask import Flask, render_template, request, redirect
+from app import app
+from flask import render_template, request, redirect
 
-from forms import LoginForm, ConfirmForm, NewChatForm, SettingsForm, MessageForm
-
-
-
-app = Flask(__name__)
-app.config.from_object('config')
+from app.forms import LoginForm, ConfirmForm, NewChatForm, SettingsForm, MessageForm
 
 
 
@@ -54,7 +50,8 @@ def chats():
 @app.route('/chat/<int:chat_id>', methods=['GET', 'POST'])
 def chat(chat_id):
     form = MessageForm()
-    print(f"Sended message: {request.form['message']}")
+    if form.validate_on_submit():
+        print(f"Sended message: {request.form['message']}")
 
     dialog_user = 'Emma'
     messages = [
@@ -110,8 +107,3 @@ def settings():
         print(f"Confirm new password: {request.form['confirm_new_password']}")
         return redirect('/confirm')
     return render_template('settings_page.html', form=form)
-
-
-
-if __name__ == "__main__":
-    app.run(debug=True)
