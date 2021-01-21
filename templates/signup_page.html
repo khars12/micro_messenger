@@ -6,13 +6,14 @@
 <div class="card shadow-lg bg-light">
     <h5 class="card-header text-center">Sign Up</h5>
     <div class="card-body">
-        <form class="mb-0" action="./chats">
+        <form class="mb-0" action="" method="POST">
+            {{ form.hidden_tag() }}
             <div class="mb-1">
                 Nickname not found. <br>
                 Confirm password to sign up.
             </div>
             <div class="mb-1">
-                <input type="password" class="form-control" id="exampleConfirmPassword1" placeholder="Confirm password">
+                {{ form.confirm_password(class="form-control", placeholder="Confirm password") }}
             </div>
             <button type="submit" class="btn btn-primary w-100 mb-3">Sign up</button>
             <div class="mb-1">

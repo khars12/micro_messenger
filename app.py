@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect
+
+from forms import LoginForm, ConfirmForm, NewChatForm, SettingsForm, MessageForm
 
 
 
@@ -7,14 +9,25 @@ app.config.from_object('config')
 
 
 
-@app.route('/')
-@app.route('/login')
+@app.route('/', methods = ['GET', 'POST'])
+@app.route('/login', methods = ['GET', 'POST'])
 def login():
-    return render_template('login_page.html')
+    form = LoginForm()
+    if form.validate_on_submit():
+        print(f"Nickname: {request.form['nickname']}")
+        print(f"Password: {request.form['password']}")
+        return redirect('/signup')
+    return render_template('login_page.html', form=form)
 
-@app.route('/signup')
+
+@app.route('/signup', methods = ['GET', 'POST'])
 def signup():
-    return render_template('signup_page.html')
+    form = ConfirmForm()
+    if form.validate_on_submit():
+        print(f"Confirm password: {request.form['confirm_password']}")
+        return redirect('/chats')
+    return render_template('signup_page.html', form=form)
+
 
 @app.route('/chats')
 def chats():
@@ -37,8 +50,12 @@ def chats():
     ]
     return render_template('chats_page.html', user=user, chats=chats)
 
-@app.route('/chat/<int:chat_id>')
+
+@app.route('/chat/<int:chat_id>', methods=['GET', 'POST'])
 def chat(chat_id):
+    form = MessageForm()
+    print(f"Sended message: {request.form['message']}")
+
     dialog_user = 'Emma'
     messages = [
         {
@@ -50,17 +67,25 @@ def chat(chat_id):
             'text': 'Привет))',
         },
     ]
-    return render_template('chat_page.html', dialog_user=dialog_user, messages=reversed(messages))
+    return render_template('chat_page.html', dialog_user=dialog_user, messages=reversed(messages), form=form)
 
-@app.route('/confirm')
+
+@app.route('/confirm', methods=['GET', 'POST'])
 def confirm():
-    return render_template('confirm_page.html')
+    form=ConfirmForm()
+    if form.validate_on_submit():
+        print(f"Confirm password: {request.form['confirm_password']}")
+        return redirect('/chats')
+    return render_template('confirm_page.html', form=form)
+
 
 @app.route('/newchat')
 def newchat():
-    query = request.args.get('q')
+    query = request.args.get('query')
     if query == None:
         query = ''
+
+    form = NewChatForm()
     
     found_users = [
         {
@@ -73,17 +98,18 @@ def newchat():
         }
     ]
 
-    return render_template('newchat_page.html', query=query, found_users=found_users)
+    return render_template('newchat_page.html', query=query, found_users=found_users, form=form)
 
-@app.route('/settings')
+
+@app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    return render_template('settings_page.html')
-
-'''
-@app.route('/<string:filename>')
-def index1(filename):
-    return render_template(filename)
-'''
+    form = SettingsForm()
+    if form.validate_on_submit():
+        print(f"New nickname: {request.form['new_nickname']}")
+        print(f"New password: {request.form['new_password']}")
+        print(f"Confirm new password: {request.form['confirm_new_password']}")
+        return redirect('/confirm')
+    return render_template('settings_page.html', form=form)
 
 
 
