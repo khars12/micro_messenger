@@ -1,22 +1,38 @@
 from flask_wtf import FlaskForm
-from wtforms import TextField, BooleanField, PasswordField
+from wtforms import StringField, BooleanField, PasswordField, SubmitField
 from wtforms.validators import Required
 
+
+
 class LoginForm(FlaskForm):
-    nickname = TextField('nickname', validators = [Required()])
-    password = PasswordField('password', validators = [Required()])
-    check_me_out = BooleanField('check_me_out', default = False)
+    nickname = StringField(validators=[Required()])
+    password = PasswordField(validators=[Required()])
+    rememberme = BooleanField("Remember me", default=False)
+    # Submit button is in html file
+
+
+class SignupForm(FlaskForm):
+    confirm_password = PasswordField(validators=[Required()])
+    confirm_password_submit = SubmitField("Sign up")
+
 
 class ConfirmForm(FlaskForm):
-    confirm_password = PasswordField('password', validators = [Required()])
+    confirm_password = PasswordField(validators=[Required()])
+    confirm_password_submit = SubmitField("Confirm")
+
 
 class NewChatForm(FlaskForm):
-    query = TextField('query')
+    query = StringField()
+    # Submit button is in html file
+
 
 class SettingsForm(FlaskForm):
-    new_nickname = TextField('new_nickname')
-    new_password = PasswordField('new_password')
-    confirm_new_password = PasswordField('confirm_new_password')
+    new_nickname = StringField()
+    new_password = PasswordField()
+    confirm_new_password = PasswordField()
+    change_settings_submit = SubmitField("Change settings")
+
 
 class MessageForm(FlaskForm):
-    message = TextField('message', validators = [Required()])
+    message = StringField(validators=[Required()])
+    message_submit = SubmitField("Send")

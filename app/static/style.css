@@ -25,7 +25,9 @@
 }
 
 .dialogs-list-group {
-    max-height: 500px;
+    /*max-height: 500px;*/
+    background-color: rgba(256, 256, 256, 1) ;
+    height: 500px;
     overflow: auto;
     border-radius: 0;
 }

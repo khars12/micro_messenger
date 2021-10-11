@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Dialogs{% endblock %}
+{% block title %}Welcome{% endblock %}
 
 {% block content %}
 <div class="card shadow-lg bg-light">
@@ -15,9 +15,8 @@
                 {{ form.password(class="form-control login-password", placeholder="Input password") }}
             </div>
             <div class="mb-3 form-check">
-                {{ form.check_me_out(class="form-check-input") }}
-                <input type="checkbox" class="form-check-input" id="exampleCheck1">
-                <label class="form-check-label" for="exampleCheck1">Check me out</label>
+                {{ form.rememberme(class="form-check-input", id="remembermeCheck") }}
+                {{ form.rememberme.label(class="form-check-label", for="remembermeCheck") }}
             </div>
             <button type="submit" class="btn btn-primary w-100"><b>SIGN</b><br>in or up</button>
         </form>

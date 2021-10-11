@@ -18,7 +18,7 @@
             {{ form.hidden_tag() }}
             <div class="mb-1">Input password to confirm changes. </div> 
             {{ form.confirm_password(class="form-control mb-2", placeholder="Confirm password") }}
-            <button type="submit" class="btn btn-primary w-100 mb-2">Confirm</button>
+            {{ form.confirm_password_submit(class="btn btn-primary w-100 mb-2") }}
         </form>
     </div>
     <div class="card-footer text-center text-muted py-1">Micro Messenger</div>

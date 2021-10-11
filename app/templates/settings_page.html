@@ -20,7 +20,7 @@
             {{ form.new_nickname(class="form-control mb-2", placeholder="New nickname") }}
             {{ form.new_password(class="form-control new-password", placeholder="New password") }}
             {{ form.confirm_new_password(class="form-control mb-2 confirm-new-password", placeholder="Confirm new password") }}
-            <button type="submit" class="btn btn-primary w-100 mb-3">Confirm</button>
+            {{ form.change_settings_submit(class="btn btn-primary w-100 mb-3") }}
         </form>
         <a href="./confirm" class="btn btn-danger w-100">Delete account</a>
     </div>

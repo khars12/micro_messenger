@@ -1,7 +1,7 @@
 from app import app
 from flask import render_template, request, redirect
 
-from app.forms import LoginForm, ConfirmForm, NewChatForm, SettingsForm, MessageForm
+from app.forms import LoginForm, SignupForm, ConfirmForm, NewChatForm, SettingsForm, MessageForm
 
 
 
@@ -10,17 +10,17 @@ from app.forms import LoginForm, ConfirmForm, NewChatForm, SettingsForm, Message
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        print(f"Nickname: {request.form['nickname']}")
-        print(f"Password: {request.form['password']}")
+        print(f"Nickname: {form.nickname.data}")
+        print(f"Password: {form.password.data}")
         return redirect('/signup')
     return render_template('login_page.html', form=form)
 
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
-    form = ConfirmForm()
+    form = SignupForm()
     if form.validate_on_submit():
-        print(f"Confirm password: {request.form['confirm_password']}")
+        print(f"Confirm password: {form.confirm_password.data}")
         return redirect('/chats')
     return render_template('signup_page.html', form=form)
 
@@ -51,7 +51,7 @@ def chats():
 def chat(chat_id):
     form = MessageForm()
     if form.validate_on_submit():
-        print(f"Sended message: {request.form['message']}")
+        print(f"Sended message: {form.message.data}")
 
     dialog_user = 'Emma'
     messages = [
@@ -78,11 +78,10 @@ def confirm():
 
 @app.route('/newchat')
 def newchat():
+    form = NewChatForm()
     query = request.args.get('query')
     if query == None:
         query = ''
-
-    form = NewChatForm()
     
     found_users = [
         {
@@ -102,8 +101,8 @@ def newchat():
 def settings():
     form = SettingsForm()
     if form.validate_on_submit():
-        print(f"New nickname: {request.form['new_nickname']}")
-        print(f"New password: {request.form['new_password']}")
-        print(f"Confirm new password: {request.form['confirm_new_password']}")
+        print(f"New nickname: {form.new_nickname.data}")
+        print(f"New password: {form.new_password.data}")
+        print(f"Confirm new password: {form.confirm_new_password.data}")
         return redirect('/confirm')
     return render_template('settings_page.html', form=form)
