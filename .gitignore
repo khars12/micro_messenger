@@ -2,3 +2,5 @@ ERD.drawio
 /templates/debug.log
 /venv
 /app/__pycache__
+/__pycache__
+/app/app.db

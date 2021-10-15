@@ -3,24 +3,58 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block content %}
-<div class="card shadow-lg bg-light">
+<div class="card shadow-lg bg-light little-card">
     <h5 class="card-header text-center">Sign Up</h5>
     <div class="card-body">
         <form class="mb-0" action="" method="POST">
             {{ form.hidden_tag() }}
             <div class="mb-1">
                 Nickname not found. <br>
-                Confirm password to sign up.
+                Come up with a password to sign up.
+            </div>
+            <div>
+                <input class="form-control mb-1" type="text" value="{{ nickname }}" disabled>
+            </div>
+            <div>
+                {% if form.password.errors %}
+                    <div class="invalid-feedback d-block">
+                    {% for e in form.password.errors %}
+                        {{ e }}
+                        <br>
+                    {% endfor %}
+                    </div>
+                    {% if form.confirm_password.errors %}
+                        {{ form.password(class="form-control signup-password border-bottom-0 is-invalid", placeholder="Input password") }}
+                    {% else %}
+                        {{ form.password(class="form-control signup-password is-invalid", placeholder="Input password") }}
+                    {% endif %}
+                {% else %}
+                    {{ form.password(class="form-control signup-password border-bottom-0", placeholder="Input password") }}
+                {% endif %}
             </div>
             <div class="mb-1">
-                {{ form.confirm_password(class="form-control", placeholder="Confirm password") }}
+                {% if form.confirm_password.errors %}
+                    {{ form.confirm_password(class="form-control signup-confirm-password is-invalid", placeholder="Confirm password") }}
+                    <div class="invalid-feedback">
+                    {% for e in form.confirm_password.errors %}
+                        {{ e }}
+                        <br>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    {% if form.password.errors %}
+                        {{ form.confirm_password(class="form-control signup-confirm-password border-top-0", placeholder="Confirm password") }}
+                    {% else %}
+                        {{ form.confirm_password(class="form-control signup-confirm-password", placeholder="Confirm password") }}
+                    {% endif %}
+                {% endif %}
             </div>
-            {{ form.confirm_password_submit(class="btn btn-primary w-100 mb-3") }}
+            {{ form.signup_submit(class="btn btn-primary w-100 mb-3") }}
             <div class="mb-1">
                 Or go back to sign in.
             </div>
         </form>
-        <a href="./login" class="btn btn-secondary w-100">Go back</a>
+        <a href="./welcome" class="btn btn-secondary w-100">Go back</a>
     </div>
     <div class="card-footer text-center text-muted py-1">Micro Messenger</div>
 </div>

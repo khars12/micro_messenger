@@ -1,28 +1,56 @@
 from app import app
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, session
 
-from app.forms import LoginForm, SignupForm, ConfirmForm, NewChatForm, SettingsForm, MessageForm
+from app.forms import JustNickForm, SignInForm, SignUpForm, ConfirmForm, NewChatForm, SettingsForm, MessageForm
+import app.database_functions as db_func
 
 
 
 @app.route('/', methods = ['GET', 'POST'])
-@app.route('/login', methods = ['GET', 'POST'])
-def login():
-    form = LoginForm()
+@app.route('/welcome', methods = ['GET', 'POST'])
+def welcome():
+    form = JustNickForm()
+
     if form.validate_on_submit():
-        print(f"Nickname: {form.nickname.data}")
-        print(f"Password: {form.password.data}")
-        return redirect('/signup')
-    return render_template('login_page.html', form=form)
+        session['nickname'] = form.nickname.data
+        # TODO redirect to signin if nickname is in db else signup
+
+        return redirect('/signin')
+
+    if 'nickname' in session:
+        signed_up=True if session['nickname'] == 'sup' else False
+        del session['nickname']
+    else:
+        signed_up = False
+    return render_template('welcome_page.html', form=form, signed_up=signed_up)
+
+
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    form = SignInForm()
+
+    if form.validate_on_submit():
+        # TODO login
+        return redirect('/chats')
+
+    if 'nickname' in session:
+        return render_template('signin_page.html', form=form, nickname=session['nickname'])
+    else:
+        return redirect('/')
 
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
-    form = SignupForm()
+    form = SignUpForm()
     if form.validate_on_submit():
-        print(f"Confirm password: {form.confirm_password.data}")
-        return redirect('/chats')
-    return render_template('signup_page.html', form=form)
+        db_func.create_new_user(session['nickname'], form.password.data)
+        session['nickname'] = 'sup'
+        return redirect('/welcome')
+
+    if 'nickname' in session:
+        return render_template('signup_page.html', form=form, nickname=session['nickname'])
+    else:
+        return redirect('/')
 
 
 @app.route('/chats')
