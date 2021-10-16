@@ -21,14 +21,14 @@ class User(db.Model):
     chats = db.relationship('Chat', secondary=users_chats, backref=db.backref('users', lazy='dynamic'))
 
     def __repr__(self):
-        return '<User {{self.nickname}}>'
+        return f'<User {self.nickname}>'
 
 
 class Chat(db.Model):
     id = db.Column(db.Integer, primary_key = True)
 
     def __repr__(self):
-        return '<Chat {{self.id}}>'
+        return f'<Chat {self.id}>'
 
 
 class Message(db.Model):
@@ -39,4 +39,4 @@ class Message(db.Model):
     text = db.Column(db.Text)
 
     def __repr__(self):
-        return '<Message {{self.id}} text: {{self.text}}>'
+        return f'<Message {self.id} text: {self.text}>'

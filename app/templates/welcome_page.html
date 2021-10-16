@@ -6,9 +6,20 @@
 <div class="card shadow-lg bg-light little-card">
     <h5 class="card-header text-center">Welcome!</h5>
     <div class="card-body">
-        {% if signed_up %}
-        <div class="valid-feedback d-block mb-1">You are signed up! Now you can use our Messenger. </div>
-        {% endif %}
+        <div class="container mb-1 p-0">
+            {% for cat, msg in get_flashed_messages(True) %}
+                <div class="valid-feedback d-block">
+                    {% if cat == 'success' %}
+                        {{ msg }} <br>
+                    {% endif %}
+                </div>
+                <div class="invalid-feedback d-block">
+                    {% if cat == 'error' %}
+                        {{ msg }} <br>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
         <form class="mb-0" action="" method="POST">
             {{ form.hidden_tag() }}
             <div class="mb-3">

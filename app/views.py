@@ -1,37 +1,60 @@
+from flask.helpers import url_for
 from app import app
-from flask import render_template, request, redirect, session
+from flask import render_template, request, redirect, session, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import login_user, login_required, current_user, logout_user
 
 from app.forms import JustNickForm, SignInForm, SignUpForm, ConfirmForm, NewChatForm, SettingsForm, MessageForm
 import app.database_functions as db_func
+import app.models as models
 
+from app.userlogin import UserLogin
+
+
+
+@app.login_manager.user_loader
+def load_user(user_id):
+    return UserLogin(db_func.get_user_by_id(user_id))
 
 
 @app.route('/', methods = ['GET', 'POST'])
 @app.route('/welcome', methods = ['GET', 'POST'])
 def welcome():
+    if current_user.is_authenticated:
+        return redirect(url_for('chats'))
+
     form = JustNickForm()
 
     if form.validate_on_submit():
         session['nickname'] = form.nickname.data
-        # TODO redirect to signin if nickname is in db else signup
+        user = db_func.get_user_by_nickname(form.nickname.data)
+        if isinstance(user, models.User) :
+            return redirect('/signin')
+        elif user == -1:
+            flash("Database error.", 'error')
+        else:
+            return redirect('/signup')
 
-        return redirect('/signin')
-
-    if 'nickname' in session:
-        signed_up=True if session['nickname'] == 'sup' else False
-        del session['nickname']
-    else:
-        signed_up = False
-    return render_template('welcome_page.html', form=form, signed_up=signed_up)
+    return render_template('welcome_page.html', form=form)
 
 
 @app.route('/signin', methods=['GET', 'POST'])
 def signin():
+    if current_user.is_authenticated:
+        return redirect(url_for('chats'))
+
     form = SignInForm()
 
     if form.validate_on_submit():
-        # TODO login
-        return redirect('/chats')
+        user = db_func.get_user_by_nickname(session['nickname'])
+        if user == -1:
+            flash("Database error.", "error")
+        elif user and check_password_hash(user.password, form.password.data):
+            userlogin = UserLogin(user)
+            login_user(userlogin, form.rememberme.data)
+            return redirect('/chats')
+        else:
+            flash("Wrong password.", "error")
 
     if 'nickname' in session:
         return render_template('signin_page.html', form=form, nickname=session['nickname'])
@@ -41,21 +64,34 @@ def signin():
 
 @app.route('/signup', methods = ['GET', 'POST'])
 def signup():
+    if current_user.is_authenticated:
+        return redirect(url_for('chats'))
+        
     form = SignUpForm()
     if form.validate_on_submit():
-        db_func.create_new_user(session['nickname'], form.password.data)
-        session['nickname'] = 'sup'
+        password_hash = generate_password_hash(form.password.data)
+        res_status = db_func.create_new_user(session['nickname'], password_hash)
+        del session['nickname']
+        flash('You are signed up! Now you can use our Messenger. ', 'success') if res_status == 0 else flash('An error has occurred during signing up. ', 'error')
         return redirect('/welcome')
 
     if 'nickname' in session:
         return render_template('signup_page.html', form=form, nickname=session['nickname'])
     else:
-        return redirect('/')
+        return redirect(url_for('welcome'))
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    flash("You are logged out. ", 'success')
+    return redirect(url_for('welcome'))
 
 
 @app.route('/chats')
+@login_required
 def chats():
-    user = 'Arseniy'
+    user = current_user.get_user().nickname
     chats = [
         {
             'chat_user': 'Emma',
@@ -76,6 +112,7 @@ def chats():
 
 
 @app.route('/chat/<int:chat_id>', methods=['GET', 'POST'])
+@login_required
 def chat(chat_id):
     form = MessageForm()
     if form.validate_on_submit():
@@ -96,6 +133,7 @@ def chat(chat_id):
 
 
 @app.route('/confirm', methods=['GET', 'POST'])
+@login_required
 def confirm():
     form=ConfirmForm()
     if form.validate_on_submit():
@@ -105,7 +143,10 @@ def confirm():
 
 
 @app.route('/newchat')
+@login_required
 def newchat():
+    user = current_user.get_user().nickname
+
     form = NewChatForm()
     query = request.args.get('query')
     if query == None:
@@ -122,10 +163,11 @@ def newchat():
         }
     ]
 
-    return render_template('newchat_page.html', query=query, found_users=found_users, form=form)
+    return render_template('newchat_page.html', user=user, query=query, found_users=found_users, form=form)
 
 
 @app.route('/settings', methods=['GET', 'POST'])
+@login_required
 def settings():
     form = SettingsForm()
     if form.validate_on_submit():
@@ -134,3 +176,8 @@ def settings():
         print(f"Confirm new password: {form.confirm_new_password.data}")
         return redirect('/confirm')
     return render_template('settings_page.html', form=form)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return redirect(url_for('welcome'))

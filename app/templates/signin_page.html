@@ -12,12 +12,18 @@
                 <input class="form-control signin-nickname" type="text" value="{{ nickname }}" disabled>
             </div>
             <div class="mb-1">
-                {% if form.password.errors %}
+                {% set flashed_messages = get_flashed_messages(True) %}
+                {% if form.password.errors or flashed_messages %}
                     {{ form.password(class="form-control signin-password is-invalid", placeholder="Input password") }}
                     <div class="invalid-feedback">
                     {% for e in form.password.errors %}
                         {{ e }}
                         <br>
+                    {% endfor %}
+                    {% for cat, msg in flashed_messages %}
+                        {% if cat == 'error' %}
+                            {{ msg }}
+                        {% endif %}
                     {% endfor %}
                     </div>
                 {% else %}
