@@ -5,7 +5,7 @@
 {% block content %}
 <div class="card shadow-lg bg-light dialogs-card m-3">
     <div class="card-header row mx-0">
-        <div class="col px-0"><h5 class="mb-0"><a href="./chats" class="link-dark"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left align-top" viewBox="0 0 16 16">
+        <div class="col-10 px-0"><h5 class="mb-0"><a href="./chats" class="link-dark"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left align-top" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
             </svg></a> {{user}}  <a href="./settings" class="link-dark"><svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-gear" viewBox="0 0 16 16">
             <path d="M8 4.754a3.246 3.246 0 1 0 0 6.492 3.246 3.246 0 0 0 0-6.492zM5.754 8a2.246 2.246 0 1 1 4.492 0 2.246 2.246 0 0 1-4.492 0z"/>
@@ -16,25 +16,17 @@
             <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
             </svg></a></div>
     </div>
-    <div class="card-body p-0">                
-        <div class="px-2 pt-2">Input nickname you want to find.</div>
+    <div class="card-body p-0">
         <div class="row mx-0 border-bottom">
             <form class="mb-0" action="" id="user_search"></form>
-                <div class="col-10 py-1 ps-1 pe-0 chat-input">
-                    {{ form.query(class="form-control chat-input", placeholder="Input nickname", value=query, form="user_search") }}
-                </div>
-                <div class="col-2 py-1 pe-1 ps-0 chat-sendbtn">
-                    <button type="submit" form="user_search" class="btn btn-primary w-100 chat-sendbtn">Find</button>
+                <div class="p-1">
+                    {{ form.query(class="form-control", placeholder="Input nickname you want to find", form="user_search", autocomplete="off") }}
                 </div>
         </div>
-        <div class="dialogs-list-group list-group-flush list-group p-0">
-        {% for found_user in found_users %}
-                <a href="./chat/{{ found_user.chat_id }}" class="list-group-item list-group-item-action">
-                    <strong>{{ found_user.nickname }}</strong>
-                </a>
-        {% endfor %}
+        <div class="new-chat-list-group list-group-flush list-group p-0" id="results-list-group">
         </div>
     </div>
     <div class="card-footer text-center text-muted py-1">Micro Messenger</div>
 </div>
+<script type="text/javascript" src="{{ url_for('static', filename='newchat_page.js') }}"></script>
 {% endblock %}

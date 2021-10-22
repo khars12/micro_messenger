@@ -11,7 +11,6 @@ users_chats = db.Table('users_chats',
 )
 
 
-
 # Models
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

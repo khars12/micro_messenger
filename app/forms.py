@@ -5,7 +5,7 @@ from wtforms.validators import EqualTo, InputRequired, Length, Regexp, Validatio
 
 
 class JustNickForm(FlaskForm):
-    nickname = StringField(validators=[
+    nickname = StringField(render_kw={'autofocus': True}, validators=[
         Length(min=4, message="Minimum nickname length is 4."), 
         Length(max=20, message="Maximum nickname length is 20."), 
         Regexp(r'[A-Za-z0-9_]*$', message="Nickname can only use letters, numbers and underscores.")
@@ -13,7 +13,7 @@ class JustNickForm(FlaskForm):
 
 
 class SignInForm(FlaskForm):
-    password = PasswordField(validators=[
+    password = PasswordField(render_kw={'autofocus': True}, validators=[
         Length(min=5, message="Minimum password length is 5."), 
         Length(max=20, message="Maximum password length is 20."), 
         Regexp(r'[!-}]*$', message="Password can only use letters, numbers and some other symbols.")
@@ -23,7 +23,7 @@ class SignInForm(FlaskForm):
 
 
 class SignUpForm(FlaskForm):
-    password = PasswordField(validators=[
+    password = PasswordField(render_kw={'autofocus': True}, validators=[
         Length(min=5, message="Minimum password length is 5."), 
         Length(max=20, message="Maximum password length is 20."), 
         Regexp(r'[!-}]*$', message="Password can only use letters, numbers and some other symbols.")
@@ -33,13 +33,12 @@ class SignUpForm(FlaskForm):
 
 
 class ConfirmForm(FlaskForm):
-    confirm_password = PasswordField(validators=[InputRequired()])
+    confirm_password = PasswordField(render_kw={'autofocus': True}, validators=[InputRequired()])
     confirm_password_submit = SubmitField("Confirm")
 
 
 class NewChatForm(FlaskForm):
-    query = StringField()
-    # Submit button is in html file
+    query = StringField(render_kw={'autofocus': True})
 
 
 def check_new_nickname_min_length(form, field):
@@ -70,5 +69,5 @@ class SettingsForm(FlaskForm):
 
 
 class MessageForm(FlaskForm):
-    message = StringField()
+    message = StringField(render_kw={'autofocus': True}, )
     message_submit = SubmitField("Send")

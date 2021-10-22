@@ -1,6 +1,6 @@
 from flask.helpers import url_for
 from app import app
-from flask import render_template, request, redirect, session, flash
+from flask import render_template, request, redirect, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, login_required, current_user, logout_user
 
@@ -111,14 +111,22 @@ def chats():
     return render_template('chats_page.html', user=user, chats=chats)
 
 
-@app.route('/chat/<int:chat_id>', methods=['GET', 'POST'])
+@app.route('/chats/<int:user_id>', methods=['GET', 'POST'])
 @login_required
-def chat(chat_id):
+def chat(user_id):
     form = MessageForm()
-    if form.validate_on_submit():
-        print(f"Sended message: {form.message.data}")
 
-    dialog_user = 'Emma'
+    dialog_user = db_func.get_user_by_id(1) # temporarily
+    '''dialog_user = db_func.get_user_by_id(user_id)
+
+    if not dialog_user or dialog_user == -1:
+        return redirect(url_for('chats'))
+
+    chat = db_func.get_chat_by_users_id(current_user.get_id(), user_id)
+
+    if not chat:
+        chat = db_func.create_new_chat(current_user.get_user(), dialog_user)'''
+
     messages = [
         {
             'is_received': True,
@@ -127,6 +135,10 @@ def chat(chat_id):
         {
             'is_received': False,
             'text': 'Привет))',
+        },
+        {
+            'is_received': False,
+            'text': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla viverra feugiat euismod. Cras tempor tempus lobortis. Aliquam viverra porttitor arcu, vel tristique velit egestas ac. Morbi pellentesque diam nulla, porttitor pellentesque mauris tempus ut. Mauris euismod risus nec tortor lacinia, et laoreet ante lobortis. ',
         },
     ]
     return render_template('chat_page.html', dialog_user=dialog_user, messages=reversed(messages), form=form)
@@ -148,22 +160,8 @@ def newchat():
     user = current_user.get_user().nickname
 
     form = NewChatForm()
-    query = request.args.get('query')
-    if query == None:
-        query = ''
-    
-    found_users = [
-        {
-            'nickname': 'Arseniy',
-            'chat_id': '1234'
-        },
-        {
-            'nickname': 'Nikita',
-            'chat_id': '123456'
-        }
-    ]
 
-    return render_template('newchat_page.html', user=user, query=query, found_users=found_users, form=form)
+    return render_template('newchat_page.html', user=user, form=form)
 
 
 @app.route('/settings', methods=['GET', 'POST'])
@@ -181,3 +179,20 @@ def settings():
 @app.errorhandler(404)
 def page_not_found(e):
     return redirect(url_for('welcome'))
+
+
+@app.route('/api/usersearch')
+@login_required
+def api_usersearch():
+    query = request.args.get('query')
+    offset = request.args.get('offset', type=int)
+
+    found_users = db_func.get_users_by_nickname_query(query, offset=offset, limit=100, order_by_nickname=True)
+    found_users_json = []
+    for user in found_users:
+        found_users_json.append({
+            'nickname': user.nickname,
+            'id': user.id
+            })
+
+    return jsonify(found_users_json)

@@ -23,7 +23,7 @@
         </a>
 
         {% for chat in chats %}
-        <a href="./chat/{{chat.chat_id}}" class="list-group-item list-group-item-action">
+        <a href="./chats/{{chat.chat_id}}" class="list-group-item list-group-item-action">
             <div class="row">
                 <div class="col-5 pe-0"><strong>{{chat.chat_user}}</strong></div>
                 <div class="col text-end ps-0">{{chat.last_msg_date}} | {{chat.last_msg_time}} 

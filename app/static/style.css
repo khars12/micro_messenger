@@ -39,16 +39,28 @@
 }
 
 .dialogs-list-group {
-    /*max-height: 500px;*/
+    background-color: rgba(256, 256, 256, 1) ;
+    height: 547px;
+    overflow: auto;
+    border-radius: 0;
+}
+
+@media (max-height: 680px) {
+    .dialogs-list-group {
+        height: calc(100vh - 103px);
+    }
+}
+
+.new-chat-list-group {
     background-color: rgba(256, 256, 256, 1) ;
     height: 500px;
     overflow: auto;
     border-radius: 0;
 }
 
-@media (max-height: 568px) {
-    .dialogs-list-group {
-        max-height: 450px;
+@media (max-height: 680px) {
+    .new-chat-list-group {
+        height: calc(100vh - 150px);
     }
 }
 
@@ -64,9 +76,15 @@
     flex-direction: column-reverse;
 }
 
+.msg-sended {
+    border: 0px;
+    padding-left: 30px;
+}
+
 .msg-received {
     background-color: rgba(13, 110, 253, 0.2) ;
     background-image: var(--bs-gradient);
+    border: 0px;
 }
 
 @media (max-height: 568px) {
