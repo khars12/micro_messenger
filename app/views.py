@@ -117,32 +117,21 @@ def chat(user_id):
     form = MessageForm()
 
     dialog_user = db_func.get_user_by_id(user_id)
-
     if not dialog_user or dialog_user == -1:
         return redirect(url_for('chats'))
 
     chat = db_func.get_chat_by_users_id(current_user.get_user(), dialog_user)
-    print(chat)
-
     if not chat:
         chat = db_func.create_new_chat(current_user.get_user(), dialog_user)
-    print(chat)
 
-    messages = [
-        {
-            'is_received': True,
-            'text': 'Привет)',
-        },
-        {
-            'is_received': False,
-            'text': 'Привет))',
-        },
-        {
-            'is_received': False,
-            'text': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla viverra feugiat euismod. Cras tempor tempus lobortis. Aliquam viverra porttitor arcu, vel tristique velit egestas ac. Morbi pellentesque diam nulla, porttitor pellentesque mauris tempus ut. Mauris euismod risus nec tortor lacinia, et laoreet ante lobortis. ',
-        },
-    ]
-    return render_template('chat_page.html', dialog_user=dialog_user, messages=reversed(messages), form=form)
+    if form.validate_on_submit():
+        a = db_func.create_new_message(from_id=current_user.get_id(), chat_id=chat.id, text=form.message.data)
+        return redirect('/chats/' + str(user_id))
+
+    messages = db_func.get_messages_by_chat(chat)
+    messages_json = [{'is_received': (True if str(message.from_id) != current_user.get_id() else False), 'text': message.text} for message in messages]
+
+    return render_template('chat_page.html', dialog_user=dialog_user, messages=reversed(messages_json), form=form)
 
 
 @app.route('/confirm', methods=['GET', 'POST'])
