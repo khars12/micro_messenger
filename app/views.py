@@ -95,14 +95,14 @@ def chats():
     chats = [
         {
             'chat_user': 'Emma',
-            'chat_id': '1234',
+            'chat_id': '1',
             'last_msg_date': 'today',
             'last_msg_time': '12:20',
             'has_new_msg': True
         },
         {
             'chat_user': 'Andrey',
-            'chat_id': '12345',
+            'chat_id': '1',
             'last_msg_date': 'yesterday',
             'last_msg_time': '18:54',
             'has_new_msg': False
@@ -116,16 +116,17 @@ def chats():
 def chat(user_id):
     form = MessageForm()
 
-    dialog_user = db_func.get_user_by_id(1) # temporarily
-    '''dialog_user = db_func.get_user_by_id(user_id)
+    dialog_user = db_func.get_user_by_id(user_id)
 
     if not dialog_user or dialog_user == -1:
         return redirect(url_for('chats'))
 
-    chat = db_func.get_chat_by_users_id(current_user.get_id(), user_id)
+    chat = db_func.get_chat_by_users_id(current_user.get_user(), dialog_user)
+    print(chat)
 
     if not chat:
-        chat = db_func.create_new_chat(current_user.get_user(), dialog_user)'''
+        chat = db_func.create_new_chat(current_user.get_user(), dialog_user)
+    print(chat)
 
     messages = [
         {

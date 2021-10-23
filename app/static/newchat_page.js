@@ -1,5 +1,4 @@
-const usersearchURL = 'http://localhost:5000/api/usersearch'
-
+const usersearchURL = 'http://' + window.location.href.split('/')[2] + '/api/usersearch'
 
 /**
  * 

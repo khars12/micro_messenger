@@ -1,5 +1,6 @@
 from typing import Optional, Union
 import flask_sqlalchemy
+from sqlalchemy.orm.collections import InstrumentedSet
 
 from app import db
 from app.models import User, Chat
@@ -70,16 +71,24 @@ def create_new_chat(user1:User, user2:User) -> Union[Chat, int]:
         new_chat.users.append(user2)
         db.session.add(new_chat)
         db.session.commit()
-        return 0
+        return new_chat
     except:
         db.session.rollback()
         return -1
 
 
-#def get_chat_by_users_id(user1_id:int, user2_id:int) -> Union[Chat, None, int]:
-#    ''' Returns Chat object from db by users ids, None if Chat not found or -1 if error happened. '''
-#    try:
-#        user = User.query.get(user_id)
-#        return user
-#    except:
-#        return -1
+def get_chat_by_users_id(user1:User, user2:User) -> Union[Chat, None, int]:
+    ''' Returns Chat object from db by two User objects, None if Chat not found or -1 if error happened. '''
+    try:
+        if user1.id == user2.id:
+            for chat in user1.chats:
+                if chat.users.count() == 1:
+                    return chat
+            return None
+
+        chats_for_users = list(InstrumentedSet(user1.chats).intersection(InstrumentedSet(user2.chats)))
+        if len(chats_for_users) == 0:
+            return None
+        return chats_for_users[0]
+    except:
+        return -1
