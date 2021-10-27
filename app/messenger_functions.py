@@ -1,11 +1,14 @@
 from typing import Union
 import flask_sqlalchemy
+from sqlalchemy import func
 from sqlalchemy.orm.collections import InstrumentedSet
 
 from app import db
 from app.models import User, Chat, Message
 
 
+
+### Database functions region
 
 def create_new_user(nickname:str, password_hash:str) -> int: 
     ''' Creates new User and adds it to database. 
@@ -48,7 +51,7 @@ def get_user_by_id(user_id:int) -> Union[User, None, int]:
 def get_user_by_nickname(user_nickname:str) -> Union[User, None, int]:
     ''' Returns User object from db by user_nickname, None if User not found or -1 if error happened. '''
     try:
-        user = User.query.filter(User.nickname.lower() == user_nickname.lower()).first()
+        user = User.query.filter(func.lower(User.nickname) == func.lower(user_nickname.lower())).first()
         return user
     except:
         return -1
@@ -91,7 +94,16 @@ def create_new_chat(user1:User, user2:User) -> Union[Chat, int]:
         return -1
 
 
-def get_chat_by_users_id(user1:User, user2:User) -> Union[Chat, None, int]:
+def get_chat_by_id(chat_id:int) -> Union[Chat, None, int]:
+    ''' Returns Chat object from db by chat_id, None if Chat not found or -1 if error happened. '''
+    try:
+        chat = Chat.query.get(chat_id)
+        return chat
+    except:
+        return -1
+
+
+def get_chat_by_users(user1:User, user2:User) -> Union[Chat, None, int]:
     ''' Returns Chat object from db by two User objects, None if Chat not found or -1 if error happened. '''
     try:
         if user1.id == user2.id:
@@ -135,3 +147,7 @@ def get_messages_by_chat(chat:Chat, offset:int=0, limit:int=-1) -> Union[flask_s
         return chat_messages
     except:
         return -1
+
+
+
+### Other functions region

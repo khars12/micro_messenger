@@ -53,7 +53,7 @@
 
 .new-chat-list-group {
     background-color: rgba(256, 256, 256, 1) ;
-    height: 500px;
+    height: 499px;
     overflow: auto;
     border-radius: 0;
 }
@@ -82,7 +82,7 @@
     }
 }
 
-.msg-sended {
+.msg-sent {
     border: 0px;
     padding-left: 30px;
 }

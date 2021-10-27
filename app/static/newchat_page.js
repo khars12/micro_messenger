@@ -8,7 +8,7 @@ const usersearchURL = 'http://' + window.location.href.split('/')[2] + '/api/use
 function addToUsersList(requestJSON) {
     requestJSON.forEach(function(elem) {
         let newElemNode = document.createElement("a")
-        newElemNode.href = './chats/' + elem['id']
+        newElemNode.href = './chats/' + elem['chat_id']
         newElemNode.classList.add('list-group-item', 'list-group-item-action')
         newElemNode.innerHTML = '<strong>' + elem['nickname'] + '</strong>'
         document.getElementById("results-list-group").appendChild(newElemNode)
