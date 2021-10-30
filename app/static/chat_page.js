@@ -1,8 +1,8 @@
-const getMessagesURL = 'http://' + window.location.href.split('/')[2] + '/api/get_messages'
+const getMessagesURL = 'https://' + window.location.href.split('/')[2] + '/api/get_messages'
 const chatID = window.location.href.split('/')[4]
 var currentUserID
 
-const socket = io('http://' + window.location.href.split('/')[2])
+const socket = io('https://' + window.location.href.split('/')[2])
 
 
 function addToMessagesList(requestJSON) {
