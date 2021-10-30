@@ -1,0 +1,132 @@
+.form-control:focus {
+    z-index: 2; 
+    position: relative;
+} 
+
+.little-card {
+    width: 296px;
+}
+
+.signin-nickname {
+    border-bottom-right-radius: 0rem; 
+    border-bottom-left-radius: 0rem; 
+    border-bottom-width: 0px;
+}
+
+.signin-password {
+    border-top-right-radius: 0rem;
+    border-top-left-radius: 0rem;
+}
+
+.signup-password {
+    border-bottom-right-radius: 0rem; 
+    border-bottom-left-radius: 0rem; 
+}
+
+.signup-confirm-password {
+    border-top-right-radius: 0rem;
+    border-top-left-radius: 0rem;
+}
+
+.dialogs-card {
+    width: 500px;
+}
+
+@media (max-width: 600px) { 
+    .dialogs-card {
+        width: 100%;
+    }
+}
+
+.dialogs-list-group {
+    background-color: rgba(256, 256, 256, 1);
+    height: 547px;
+    overflow: auto;
+    border-radius: 0;
+}
+
+@media (max-height: 680px) {
+    .dialogs-list-group {
+        height: calc(100vh - 153px);
+    }
+}
+
+.new-chat-list-group {
+    background-color: rgba(256, 256, 256, 1) ;
+    height: 499px;
+    overflow: auto;
+    border-radius: 0;
+}
+
+@media (max-height: 680px) {
+    .new-chat-list-group {
+        height: calc(100vh - 201px);
+    }
+}
+
+.new-msg-circle {
+    color: var(--bs-danger)
+}
+
+.msgs-list-group {
+    height: 500px;
+    overflow: auto;
+    border-radius: 0;
+
+    flex-direction: column-reverse;
+}
+
+@media (max-height: 680px) {
+    .msgs-list-group {
+        height: calc(100vh - 200px);
+    }
+}
+
+.msg-sent {
+    border: 0px;
+    padding-left: 30px;
+}
+
+.msg-received {
+    background-color: rgba(13, 110, 253, 0.2) ;
+    background-image: var(--bs-gradient);
+    border: 0px;
+}
+
+@media (max-height: 568px) {
+    .msgs-list-group {
+        max-height: 404px;
+    }
+}
+
+@media (max-width: 500px) {
+    div.chat-input {
+        width: 70%;
+    }
+
+    div.chat-sendbtn {
+        width: 30%;
+    }
+}
+
+.chat-input {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+}
+
+.chat-sendbtn {
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+
+.new-password {
+    border-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.confirm-new-password {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}

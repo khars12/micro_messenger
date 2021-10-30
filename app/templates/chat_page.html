@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Chat with {{ chat_name }}{% endblock %}
+
+{% block content %}
+<div class="card shadow-lg bg-light dialogs-card m-3">
+    <div class="card-header row mx-0">
+        <div class="col-10 px-0"><h5 class="mb-0"><a href="/chats" class="link-dark"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left align-top" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+            </svg></a> Chat with {{ chat_name }}</h5></div>
+        <div class="col-2 px-0 text-end"><a href="{{ url_for('logout') }}" class="link-dark"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-box-arrow-right" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z"/>
+            <path fill-rule="evenodd" d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
+            </svg></a></div>
+    </div>
+    <div class="card-body p-0">
+
+        <div class="list-group msgs-list-group bg-white" id="msgs-list-group"></div>
+        <form class="m-0 p-0" action="" method="POST" id="send_msg_form">
+            {{ form.hidden_tag() }}
+            <div class="row mx-0 border-top">
+                <div class="col-10 py-1 ps-1 pe-0 chat-input">
+                    {{ form.message(class="form-control chat-input", placeholder="Input message", value="", autocomplete="off", id="chat-input") }}
+                </div>
+                <div class="col-2 py-1 pe-1 ps-0 chat-sendbtn">
+                    {{ form.message_submit(class="btn btn-primary w-100 chat-sendbtn", id="chat-sendbtn") }}
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-center text-muted py-1">Micro Messenger</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js" integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA==" crossorigin="anonymous"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='chat_page.js') }}"></script>
+{% endblock %}

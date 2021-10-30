@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+<div class="card shadow-lg bg-light little-card">
+    <h5 class="card-header text-center">Welcome!</h5>
+    <div class="card-body">
+        <form class="mb-0" action="" method="POST">
+            {{ form.hidden_tag() }}
+            <div>
+                <input class="form-control signin-nickname" type="text" value="{{ nickname }}" disabled>
+            </div>
+            <div class="mb-1">
+                {% set flashed_messages = get_flashed_messages(True) %}
+                {% if form.password.errors or flashed_messages %}
+                    {{ form.password(class="form-control signin-password is-invalid", placeholder="Input password") }}
+                    <div class="invalid-feedback">
+                    {% for e in form.password.errors %}
+                        {{ e }}
+                        <br>
+                    {% endfor %}
+                    {% for cat, msg in flashed_messages %}
+                        {% if cat == 'error' %}
+                            {{ msg }}
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.password(class="form-control signin-password", placeholder="Input password") }}
+                {% endif %}
+            </div>
+            <div class="mb-1 form-check">
+                {{ form.rememberme(class="form-check-input", id="remembermeCheck") }}
+                {{ form.rememberme.label(class="form-check-label", for="remembermeCheck") }}
+            </div>
+            {{ form.signin_submit(class="btn btn-primary w-100 mb-3") }}
+            <div class="mb-1">
+                Or go back to change nick.
+            </div>
+        </form>
+        <a href="./welcome" class="btn btn-secondary w-100">Go back</a>
+    </div>
+    <div class="card-footer text-center text-muted py-1">Micro Messenger</div>
+</div>
+{% endblock %}
