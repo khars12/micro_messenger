@@ -1,6 +1,4 @@
 from flask.helpers import url_for
-from sqlalchemy.sql.expression import text
-from sqlalchemy.sql.functions import user
 from app import app
 from flask import render_template, request, redirect, session, flash, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash

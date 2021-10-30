@@ -120,6 +120,20 @@ def get_chat_by_users(user1:User, user2:User) -> Union[Chat, None, int]:
         return -1
 
 
+# def get_user_chats(user:Union[User, int], offset:int=0, limit:int=-1) -> Union[flask_sqlalchemy.BaseQuery, None, int]:
+#     ''' Returns flask_sqlalchemy.BaseQuery of Chat objects which nicknames starts with user_nickname_query or -1 if error happened. '''
+#     !!!try:
+#         chat_messages = Message.query.filter(Message.chat_id == chat.id).order_by(Message.datetime)
+#         if limit != -1:
+#             chat_messages = chat_messages.limit(limit)
+#         if offset:
+#             chat_messages = chat_messages.offset(offset)
+
+#         return chat_messages
+#     except:
+#         return -1
+
+
 def create_new_message(from_id:int, chat_id:int, text:str) -> Union[Message, int]:
     ''' Creates new Message and adds it to database. 
     
@@ -136,7 +150,7 @@ def create_new_message(from_id:int, chat_id:int, text:str) -> Union[Message, int
 
 
 def get_messages_by_chat(chat:Chat, offset:int=0, limit:int=-1) -> Union[flask_sqlalchemy.BaseQuery, None, int]:
-    ''' Returns Chat object from db by two User objects, None if Chat not found or -1 if error happened. '''
+    ''' Returns flask_sqlalchemy.BaseQuery of Message objects which nicknames starts with user_nickname_query or -1 if error happened.  '''
     try:
         chat_messages = Message.query.filter(Message.chat_id == chat.id).order_by(Message.datetime)
         if limit != -1:
