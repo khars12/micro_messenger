@@ -3,4 +3,4 @@ ERD.drawio
 /venv
 /app/__pycache__
 /__pycache__
-/app/app.db
+# /app/app.db
