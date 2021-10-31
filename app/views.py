@@ -95,8 +95,8 @@ def logout():
 @app.route('/chats')
 @login_required
 def chats():
-    session['halo'] = 'hallo'
     user = current_user.get_user().nickname
+
     chats = [
         {
             'chat_user': 'Emma',
@@ -187,6 +187,12 @@ def settings():
 @app.errorhandler(404)
 def page_not_found(e):
     return redirect(url_for('welcome'))
+
+@app.errorhandler(AttributeError)
+def page_not_found(e):
+    if not current_user.get_user():
+        logout_user()
+        return redirect(url_for('welcome'))
 
 
 @app.route('/api/usersearch')
