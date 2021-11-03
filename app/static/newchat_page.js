@@ -1,4 +1,4 @@
-const usersearchURL = 'https://' + window.location.href.split('/')[2] + '/api/usersearch'
+const usersearchURL = window.location.href.split('/')[0] + '//' + window.location.href.split('/')[2] + '/api/usersearch'
 
 /**
  * 

@@ -1,10 +1,12 @@
 from typing import Union
+from datetime import datetime
+
 import flask_sqlalchemy
 from sqlalchemy import func
 from sqlalchemy.orm.collections import InstrumentedSet
 
 from app import db
-from app.models import User, Chat, Message
+from app.models import User, Chat, Message, users_chats
 
 
 
@@ -120,18 +122,50 @@ def get_chat_by_users(user1:User, user2:User) -> Union[Chat, None, int]:
         return -1
 
 
-# def get_user_chats(user:Union[User, int], offset:int=0, limit:int=-1) -> Union[flask_sqlalchemy.BaseQuery, None, int]:
-#     ''' Returns flask_sqlalchemy.BaseQuery of Chat objects which nicknames starts with user_nickname_query or -1 if error happened. '''
-#     !!!try:
-#         chat_messages = Message.query.filter(Message.chat_id == chat.id).order_by(Message.datetime)
-#         if limit != -1:
-#             chat_messages = chat_messages.limit(limit)
-#         if offset:
-#             chat_messages = chat_messages.offset(offset)
+def get_user_chats(user:Union[User, str, int], offset:int=0, limit:int=100) -> Union[list, int]:
+    ''' Returns list of dicts with keys 'chat_id', 'last_msg_datetime' for user (user argument may be user id) or -1 if error happened. '''
+    try:
+        if isinstance(user, (int, str)):
+            user = get_user_by_id(int(user))
 
-#         return chat_messages
-#     except:
-#         return -1
+        request = f'select uc.chat_id, max(m.datetime), uc.has_new_msg from User u left join users_chats uc on u.id=uc.user_id left join Message m on uc.chat_id=m.chat_id where u.id={user.id} group by uc.chat_id order by max(m.datetime) desc'
+
+        request += f' limit {limit}'
+        
+        request += f' offset {offset}'
+
+        chats = []
+
+        for row in db.engine.execute(request):
+            if not row[1]:
+                break
+
+            chat_id = str(row[0])
+            last_message_datetime = datetime.strptime(row[1].split('.')[0], '%Y-%m-%d %H:%M:%S')
+            
+            days_have_passed = datetime.now().toordinal() - last_message_datetime.toordinal()
+            if days_have_passed == 0:
+                date = 'today'
+            elif days_have_passed == 1:
+                date = 'yesterday'
+            else:
+                date = f"{last_message_datetime.day}.{last_message_datetime.month}.{last_message_datetime.year}"
+            hour = ('0' if len(str(last_message_datetime.hour)) == 1 else '') + str(last_message_datetime.hour)
+            minute = ('0' if len(str(last_message_datetime.minute)) == 1 else '') + str(last_message_datetime.minute)
+
+            has_new_msg = row[2]
+
+            chats.append({
+                'chat_name': make_chat_name(user, get_chat_by_id(chat_id)),
+                'chat_id': chat_id,
+                'last_msg_date': date,
+                'last_msg_time': f"{hour}:{minute}",
+                'has_new_msg': has_new_msg
+            })
+
+        return chats
+    except:
+        return -1
 
 
 def create_new_message(from_id:int, chat_id:int, text:str) -> Union[Message, int]:
@@ -140,16 +174,20 @@ def create_new_message(from_id:int, chat_id:int, text:str) -> Union[Message, int
         Returns: Message object if everything ok and -1 if error happened. 
     '''
     try:
+        
         new_message = Message(from_id=from_id, chat_id=chat_id, text=text)
         db.session.add(new_message)
         db.session.commit()
+
+        db.engine.execute(users_chats.update().where(users_chats.c.chat_id==chat_id).where(users_chats.c.user_id!=from_id).values(has_new_msg=True))
+
         return new_message
     except:
         db.session.rollback()
         return -1
 
 
-def get_messages_by_chat(chat:Chat, offset:int=0, limit:int=-1) -> Union[flask_sqlalchemy.BaseQuery, None, int]:
+def get_messages_by_chat(chat:Chat, offset:int=0, limit:int=-1, update_has_new_msg=True) -> Union[flask_sqlalchemy.BaseQuery, None, int]:
     ''' Returns flask_sqlalchemy.BaseQuery of Message objects which nicknames starts with user_nickname_query or -1 if error happened.  '''
     try:
         chat_messages = Message.query.filter(Message.chat_id == chat.id).order_by(Message.datetime)
@@ -158,6 +196,9 @@ def get_messages_by_chat(chat:Chat, offset:int=0, limit:int=-1) -> Union[flask_s
         if offset:
             chat_messages = chat_messages.offset(offset)
 
+        if offset == 0 and update_has_new_msg:
+            db.engine.execute(users_chats.update().where(users_chats.c.chat_id==chat.id).values(has_new_msg=False))
+
         return chat_messages
     except:
         return -1
@@ -165,3 +206,13 @@ def get_messages_by_chat(chat:Chat, offset:int=0, limit:int=-1) -> Union[flask_s
 
 
 ### Other functions region
+
+def make_chat_name(current_user:User, chat:Chat) -> str:
+    chat_users = chat.users.all()
+
+    if len(chat_users) == 1:
+        return chat_users[0].nickname
+    
+    chat_users.remove(current_user)
+
+    return ', '.join(user.nickname for user in chat_users) 

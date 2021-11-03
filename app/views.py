@@ -95,25 +95,13 @@ def logout():
 @app.route('/chats')
 @login_required
 def chats():
-    user = current_user.get_user().nickname
+    c_user = current_user.get_user()
 
-    chats = [
-        {
-            'chat_user': 'Emma',
-            'chat_id': '1',
-            'last_msg_date': 'today',
-            'last_msg_time': '12:20',
-            'has_new_msg': True
-        },
-        {
-            'chat_user': 'Andrey',
-            'chat_id': '1',
-            'last_msg_date': 'yesterday',
-            'last_msg_time': '18:54',
-            'has_new_msg': False
-        },
-    ]
-    return render_template('chats_page.html', user=user, chats=chats)
+    chats = msgr.get_user_chats(c_user)
+    
+    chats = [] if chats == -1 else chats
+
+    return render_template('chats_page.html', user=c_user.nickname, chats=chats)
 
 
 @app.route('/chats/<int:chat_id>')
@@ -128,7 +116,7 @@ def chat(chat_id:int):
     chat_users = chat.users.all()
     chat_users.remove(current_user.get_user())
 
-    chat_name = ', '.join(user.nickname for user in chat_users)
+    chat_name = msgr.make_chat_name(current_user.get_user(), chat)
 
     return render_template('chat_page.html', chat_name=chat_name, form=form)
 

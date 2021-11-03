@@ -1,3 +1,4 @@
+from sqlalchemy.orm import backref
 from app import db
 from datetime import datetime
 
@@ -7,7 +8,7 @@ from datetime import datetime
 users_chats = db.Table('users_chats', 
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('chat_id', db.Integer, db.ForeignKey('chat.id'), primary_key=True),
-    db.Column('last_read_datetime', db.DateTime)
+    db.Column('has_new_msg', db.Boolean, default=False)
 )
 
 
@@ -17,7 +18,7 @@ class User(db.Model):
     nickname = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(500), nullable=False)
 
-    chats = db.relationship('Chat', secondary=users_chats, backref=db.backref('users', lazy='dynamic'))
+    chats = db.relationship('Chat', secondary=users_chats, backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
 
     def __repr__(self):
         return f'<User {self.nickname}>'
@@ -25,6 +26,8 @@ class User(db.Model):
 
 class Chat(db.Model):
     id = db.Column(db.Integer, primary_key = True)
+
+    messages = db.relationship('Message', backref='chat', lazy='dynamic')
 
     def __repr__(self):
         return f'<Chat {self.id}>'
