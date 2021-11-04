@@ -128,7 +128,7 @@ def get_user_chats(user:Union[User, str, int], offset:int=0, limit:int=100) -> U
         if isinstance(user, (int, str)):
             user = get_user_by_id(int(user))
 
-        request = f'select uc.chat_id, max(m.datetime), uc.has_new_msg from User u left join users_chats uc on u.id=uc.user_id left join Message m on uc.chat_id=m.chat_id where u.id={user.id} group by uc.chat_id order by max(m.datetime) desc'
+        request = f'select uc.chat_id, max(m.datetime), uc.has_new_msg, m.id from User u left join users_chats uc on u.id=uc.user_id left join Message m on uc.chat_id=m.chat_id where u.id={user.id} group by uc.chat_id order by max(m.datetime) desc'
 
         request += f' limit {limit}'
         
@@ -141,31 +141,40 @@ def get_user_chats(user:Union[User, str, int], offset:int=0, limit:int=100) -> U
                 break
 
             chat_id = str(row[0])
-            last_message_datetime = datetime.strptime(row[1].split('.')[0], '%Y-%m-%d %H:%M:%S')
-            
-            days_have_passed = datetime.now().toordinal() - last_message_datetime.toordinal()
-            if days_have_passed == 0:
-                date = 'today'
-            elif days_have_passed == 1:
-                date = 'yesterday'
-            else:
-                date = f"{last_message_datetime.day}.{last_message_datetime.month}.{last_message_datetime.year}"
-            hour = ('0' if len(str(last_message_datetime.hour)) == 1 else '') + str(last_message_datetime.hour)
-            minute = ('0' if len(str(last_message_datetime.minute)) == 1 else '') + str(last_message_datetime.minute)
-
             has_new_msg = row[2]
+
+            last_message_data = get_message_data(Message.query.get(row[3]))
 
             chats.append({
                 'chat_name': make_chat_name(user, get_chat_by_id(chat_id)),
                 'chat_id': chat_id,
-                'last_msg_date': date,
-                'last_msg_time': f"{hour}:{minute}",
-                'has_new_msg': has_new_msg
+                'has_new_msg': has_new_msg,
+                **last_message_data
             })
 
         return chats
     except:
         return -1
+
+
+def get_message_data(message:Message):
+    days_have_passed = datetime.now().toordinal() - message.datetime.toordinal()
+
+    if days_have_passed == 0:
+        date = 'today'
+    elif days_have_passed == 1:
+        date = 'yesterday'
+    else:
+        date = f"{message.datetime.day}.{message.datetime.month}.{message.datetime.year}"
+
+    time = f'{str(message.datetime.hour).zfill(2)}:{str(message.datetime.minute).zfill(2)}'
+
+    return {
+        'from_id': message.from_id,
+        'text': message.text,
+        'date': date,
+        'time': time,
+    }
 
 
 def create_new_message(from_id:int, chat_id:int, text:str) -> Union[Message, int]:

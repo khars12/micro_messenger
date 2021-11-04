@@ -200,9 +200,19 @@ def api_usersearch():
     return jsonify(found_users_json)
 
 
-@app.route('/api/get_messages')
+@app.route('/api/get_chats')
 @login_required
 def api_get_messages():
+    offset = request.args.get('offset', type=int)
+
+    chats = msgr.get_user_chats(current_user.get_user(), offset=offset, limit=100)
+
+    return jsonify(chats)
+
+
+@app.route('/api/get_messages')
+@login_required
+def api_get_chats():
     chat_id = request.args.get('chat_id')
     offset = request.args.get('offset', type=int)
 
@@ -229,6 +239,11 @@ def connect(data):
         emit('current_user_id', {'current_user_id': current_user.get_id()})
 
 
+@socketio.on('listen_all_chats')
+def listen_all_chats():
+    join_room('all_chats' + current_user.get_id())
+
+
 @socketio.on('message')
 def message_sent(message):
     chat_id = message['chat_id']
@@ -242,7 +257,14 @@ def message_sent(message):
 
     del chat_id
 
-    msgr.create_new_message(int(current_user.get_id()), chat.id, text=message_text)
+    new_message = msgr.create_new_message(int(current_user.get_id()), chat.id, text=message_text)
 
-    send({'sender_id': current_user.get_id(), 'text': message_text}, to='chat'+str(chat.id))
-
+    if new_message != -1:
+        send({'sender_id': current_user.get_id(), 'text': message_text}, to='chat'+str(chat.id))
+        for user in chat.users.all():
+            send({
+                'chat_name': msgr.make_chat_name(user, chat),
+                'chat_id': chat.id,
+                'has_new_msg': True,
+                **msgr.get_message_data(new_message)
+            }, to='all_chats'+str(user.id))
