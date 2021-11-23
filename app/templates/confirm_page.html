@@ -17,10 +17,10 @@
         <form class="mb-0" action="" method="POST">
             {{ form.hidden_tag() }}
             <div class="mb-1">Input password to confirm changes. </div> 
-            {{ form.confirm_password(class="form-control mb-2", placeholder="Confirm password") }}
+            {{ form.confirm_password(class="form-control mb-2", placeholder="Current password") }}
             {{ form.confirm_password_submit(class="btn btn-primary w-100 mb-2") }}
         </form>
     </div>
-    <div class="card-footer text-center text-muted py-1">Micro Messenger</div>
+    <div class="card-footer text-center text-muted py-1">Micro Messenger<br>by Arseniy Kharitonov</div>
 </div>
 {% endblock %}

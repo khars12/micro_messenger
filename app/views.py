@@ -31,8 +31,11 @@ def welcome():
     if form.validate_on_submit():
         user = msgr.get_user_by_nickname(form.nickname.data)
         if isinstance(user, models.User) :
-            session['nickname'] = user.nickname
-            return redirect('/signin')
+            if not user.active:
+                flash('Account deleted.', category='error')
+            else:
+                session['nickname'] = user.nickname
+                return redirect('/signin')
         elif user == -1:
             flash("Database error.", 'error')
         else:
@@ -53,6 +56,8 @@ def signin():
         user = msgr.get_user_by_nickname(session['nickname'])
         if user == -1:
             flash("Database error.", "error")
+        elif user and not user.active:
+            flash("Account deleted.", "error")
         elif user and check_password_hash(user.password, form.password.data):
             userlogin = UserLogin(user)
             login_user(userlogin, form.rememberme.data)
@@ -165,10 +170,25 @@ def newchat():
 def settings():
     form = SettingsForm()
     if form.validate_on_submit():
-        print(f"New nickname: {form.new_nickname.data}")
-        print(f"New password: {form.new_password.data}")
-        print(f"Confirm new password: {form.confirm_new_password.data}")
-        return redirect('/confirm')
+        if not check_password_hash(current_user.get_user().password, form.current_password.data):
+            flash('Wrong current password. ', category='confirm_password_error')
+
+        elif form.delete_user.data:
+            print(msgr.delete_user(current_user.get_user()))
+            print("Delete user")
+            logout_user()
+            flash('User deleted', category='success')
+            return redirect(url_for('welcome'))
+        else:
+            if form.new_nickname.data:
+                msgr.change_user_nickname(current_user.get_user(), form.new_nickname.data)
+                print("Change nickanme")
+                flash("Nickname successfully changed.", category='data_changed')
+            if form.new_password.data:
+                msgr.change_user_password(current_user.get_user(), generate_password_hash(form.new_password.data))
+                print("Change password")
+                flash("Password successfully changed.", category='data_changed')
+        
     return render_template('settings_page.html', form=form)
 
 

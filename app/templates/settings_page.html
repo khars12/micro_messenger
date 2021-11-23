@@ -3,7 +3,7 @@
 {% block title %}Settings{% endblock %}
 
 {% block content %}
-<div class="card shadow-lg bg-light">
+<div class="card shadow-lg bg-light little-card">
     <div class="card-header row mx-0">
         <div class="col-10 px-0"><h5 class="mb-0"><a href="./chats" class="link-dark"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-arrow-left align-top" viewBox="0 0 16 16">
             <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
@@ -14,16 +14,88 @@
         </svg></a></div>
     </div>
     <div class="card-body">
-        <form class="mb-0" action="" method="POST">
+        <div class="valid-feedback d-block">
+        {% for msg in get_flashed_messages(category_filter=["data_changed"]) %}
+            {{msg}}<br>
+        {% endfor %}
+        </div>
+        <form id="settings_form" class="mb-0" action="" method="POST">
             {{ form.hidden_tag() }}
-            <div class="mb-1">Input data you want to change. </div> 
-            {{ form.new_nickname(class="form-control mb-2", placeholder="New nickname") }}
-            {{ form.new_password(class="form-control new-password", placeholder="New password") }}
-            {{ form.confirm_new_password(class="form-control mb-2 confirm-new-password", placeholder="Confirm new password") }}
+            <div class="mb-1">Input your current password. </div> 
+                {% with confirm_password_errors = get_flashed_messages(category_filter=["confirm_password_error"]) %}
+                {% if form.current_password.errors or confirm_password_errors %}
+                    {{ form.current_password(class="form-control is-invalid", placeholder="Current password") }}
+                    <div class="invalid-feedback">
+                    {% for e in form.current_password.errors %}
+                        {{ e }}
+                        <br>
+                    {% endfor %}
+                    {% for e in confirm_password_errors %}
+                        {{ e }} 
+                        <br>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.current_password(class="form-control", placeholder="Current password") }}
+                {% endif %} 
+                {% endwith %}
+            <div class="my-1">Input data you want to change. </div> 
+            <div class="mb-2">
+                {% if form.new_nickname.errors %}
+                    {{ form.new_nickname(class="form-control is-invalid", placeholder="New nickname", autocomplete="off") }}
+                    <div class="invalid-feedback">
+                    {% for e in form.new_nickname.errors %}
+                        {% if e != '' %}
+                            {{ e }}
+                            <br>
+                        {% endif %} 
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.new_nickname(class="form-control", placeholder="New nickname", autocomplete="off") }}
+                {% endif %} 
+            </div>
+            <div>
+                {% if form.new_password.errors %}
+                    <div class="invalid-feedback d-block">
+                    {% for e in form.new_password.errors %}
+                        {% if e != '' %}
+                            {{ e }}
+                            <br>
+                        {% endif %} 
+                    {% endfor %}
+                    </div>
+                    {% if form.confirm_new_password.errors %}
+                        {{ form.new_password(class="form-control signup-password border-bottom-0 is-invalid", placeholder="New password", autocomplete="new-password") }}
+                    {% else %}
+                        {{ form.new_password(class="form-control signup-password is-invalid", placeholder="New password", autocomplete="new-password") }}
+                    {% endif %}
+                {% else %}
+                    {{ form.new_password(class="form-control signup-password border-bottom-0", placeholder="New password", autocomplete="new-password") }}
+                {% endif %}
+            </div>
+            <div class="mb-2">
+                {% if form.confirm_new_password.errors %}
+                    {{ form.confirm_new_password(class="form-control signup-confirm-password is-invalid", placeholder="Confirm password") }}
+                    <div class="invalid-feedback">
+                    {% for e in form.confirm_new_password.errors %}
+                        {{ e }}
+                        <br>
+                    {% endfor %}
+                    </div>
+                {% else %}
+                    {% if form.new_password.errors %}
+                        {{ form.confirm_new_password(class="form-control signup-confirm-password border-top-0", placeholder="Confirm new password", autocomplete="off") }}
+                    {% else %}
+                        {{ form.confirm_new_password(class="form-control signup-confirm-password", placeholder="Confirm new password", autocomplete="off") }}
+                    {% endif %}
+                {% endif %}
+            </div>
             {{ form.change_settings_submit(class="btn btn-primary w-100 mb-3") }}
         </form>
-        <a href="./confirm" class="btn btn-danger w-100">Delete account</a>
+        <a id="btn_delete_user" href="" class="btn btn-danger w-100">Delete account</a>
     </div>
-    <div class="card-footer text-center text-muted py-1">Micro Messenger</div>
+    <div class="card-footer text-center text-muted py-1">Micro Messenger<br>by Arseniy Kharitonov</div>
 </div>
+<script type="text/javascript" src="{{ url_for('static', filename='settings_page.js') }}"></script>
 {% endblock %}

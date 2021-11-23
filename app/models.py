@@ -17,6 +17,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nickname = db.Column(db.String(64), index=True, unique=True)
     password = db.Column(db.String(500), nullable=False)
+    active = db.Column(db.Boolean, default=True, nullable=False)
 
     chats = db.relationship('Chat', secondary=users_chats, backref=db.backref('users', lazy='dynamic'), lazy='dynamic')
 

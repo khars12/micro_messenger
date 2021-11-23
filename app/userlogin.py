@@ -9,5 +9,8 @@ class UserLogin(UserMixin):
     def get_id(self):
         return str(self.__user.id)
 
+    def is_active(self):
+        return self.__user.active
+
     def get_user(self):
         return self.__user

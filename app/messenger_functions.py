@@ -27,18 +27,52 @@ def create_new_user(nickname:str, password_hash:str) -> int:
         return -1
 
 
-# TODO def delete_user(id:int) -> int:
-#    ''' Deletes user by id. 
-#    
-#        Returns: 0 if everything ok and -1 if error happened. 
-#    '''
-#    try:
-#        User.query.filter_by(id=id).delete()
-#       db.session.commit()
-#        return 0
-#    except:
-#        db.session.rollback()
-#        return -1
+def is_active(user:User) -> bool:
+    ''' Returns True if user is active else False; -1 if error happened. '''
+    try:
+        return user.active
+    except:
+        return -1
+
+
+def change_user_nickname(user:User, new_nickname:str) -> int:
+    ''' Changes user nickname. 
+    
+        Returns 0 if everything ok and -1 if error happened. 
+    '''
+    try:
+        user.nickname = new_nickname
+        db.session.commit()
+        return 0
+    except:
+        return -1
+
+
+def change_user_password(user:User, new_password_hash:str) -> int:
+    ''' Changes user password. 
+    
+        Returns 0 if everything ok and -1 if error happened. 
+    '''
+    try:
+        user.password = new_password_hash
+        db.session.commit()
+        return 0
+    except:
+        return -1
+
+
+def delete_user(user:User) -> int:
+    ''' Inactivates user. 
+    
+        Returns: 0 if everything ok and -1 if error happened. 
+    '''
+    try:
+        user.active = False
+        db.session.commit()
+        return 0
+    except:
+        db.session.rollback()
+        return -1
 
 
 def get_user_by_id(user_id:int) -> Union[User, None, int]:
@@ -220,8 +254,8 @@ def make_chat_name(current_user:User, chat:Chat) -> str:
     chat_users = chat.users.all()
 
     if len(chat_users) == 1:
-        return chat_users[0].nickname
+        return chat_users[0].nickname if chat_users[0].active else 'DELETED'
     
     chat_users.remove(current_user)
 
-    return ', '.join(user.nickname for user in chat_users) 
+    return ', '.join(user.nickname if user.active else 'DELETED' for user in chat_users) 

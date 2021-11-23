@@ -40,27 +40,27 @@
 
 .dialogs-list-group {
     background-color: rgba(256, 256, 256, 1);
-    height: 547px;
+    height: 507px;
     overflow: auto;
     border-radius: 0;
 }
 
 @media (max-height: 680px) {
     .dialogs-list-group {
-        height: calc(100vh - 153px);
+        height: calc(100vh - 193px);
     }
 }
 
 .new-chat-list-group {
     background-color: rgba(256, 256, 256, 1) ;
-    height: 499px;
+    height: 459px;
     overflow: auto;
     border-radius: 0;
 }
 
 @media (max-height: 680px) {
     .new-chat-list-group {
-        height: calc(100vh - 201px);
+        height: calc(100vh - 241px);
     }
 }
 
@@ -69,7 +69,7 @@
 }
 
 .msgs-list-group {
-    height: 500px;
+    height: 460px;
     overflow: auto;
     border-radius: 0;
 
@@ -78,7 +78,7 @@
 
 @media (max-height: 680px) {
     .msgs-list-group {
-        height: calc(100vh - 200px);
+        height: calc(100vh - 240px);
     }
 }
 
@@ -95,7 +95,7 @@
 
 @media (max-height: 568px) {
     .msgs-list-group {
-        max-height: 404px;
+        max-height: 364px;
     }
 }
 
